@@ -5,28 +5,44 @@ import Link from "next/link";
 
 export default function LoginAluno() {
 
+    const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
+    const [matricula, setMatricula] = useState('');
     const [senha, setSenha] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const [error, setError] = useState<{ message: string; focus: string } | null>(null);
 
-    // Refs
+    
+    const nomeRef = useRef<HTMLInputElement>(null);
     const emailRef = useRef<HTMLInputElement>(null);
+    const matriculaRef = useRef<HTMLInputElement>(null);
     const senhaRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!error) return;
 
+        if (error.focus === "nome") nomeRef.current?.focus();
         if (error.focus === "email") emailRef.current?.focus();
+        if (error.focus === "matricula") matriculaRef.current?.focus();
         if (error.focus === "senha") senhaRef.current?.focus();
     }, [error]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!nome.trim()) {
+            setError({ message: "Preencha o nome!", focus: "nome" });
+            return;
+        }
+
         if (!email.trim()) {
             setError({ message: "Preencha o email!", focus: "email" });
+            return;
+        }
+
+        if (!matricula.trim()) {
+            setError({ message: "Preencha a matrícula!", focus: "matricula" });
             return;
         }
 
@@ -38,6 +54,11 @@ export default function LoginAluno() {
         const emailValido = /\S+@\S+\.\S+/.test(email);
         if (!emailValido) {
             setError({ message: "Email inválido, tente novamente", focus: "email" });
+            return;
+        }
+
+        if (matricula.length < 9) {
+            setError({ message: "Sua matrícula deve ter pelo menos 9 números", focus: "matricula" });
             return;
         }
 
@@ -64,11 +85,27 @@ export default function LoginAluno() {
 
                 <div className="bg-white rounded-2xl p-8 shadow-2xl">
                     <form onSubmit={handleSubmit} className="space-y-6">
+
                         {error && (
                             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                                 {error.message}
                             </div>
                         )}
+
+                        <div>
+                            <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+                                Nome
+                            </label>
+                            <input
+                                ref={nomeRef}
+                                type="text"
+                                id="nome"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value.replace(/[0-9]/g, ""))}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
+                                placeholder="Seu nome"
+                            />
+                        </div>
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -82,6 +119,21 @@ export default function LoginAluno() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
                                 placeholder="seu.email@exemplo.com"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="matricula" className="block text-sm font-medium text-gray-700 mb-2">
+                                Matrícula
+                            </label>
+                            <input
+                                ref={matriculaRef}
+                                type="number"
+                                id="matricula"
+                                value={matricula}
+                                onChange={(e) => setMatricula(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
+                                placeholder="Número da matrícula"
                             />
                         </div>
 
@@ -117,7 +169,7 @@ export default function LoginAluno() {
                             Esqueceu sua senha?
                         </Link>
 
-                        <div className="border-t pt-4">
+                        <div className="border-t ">
                             <p className="text-gray-600 text-sm mb-3">
                                 Ainda não tem uma conta?
                             </p>
@@ -129,7 +181,7 @@ export default function LoginAluno() {
                             </Link>
                         </div>
 
-                        <div className="border-t pt-4">
+                        <div className="border-t ">
                             <p className="text-gray-600 text-sm mb-2">
                                 É Professor?
                             </p>
@@ -141,6 +193,8 @@ export default function LoginAluno() {
                             </Link>
                         </div>
                     </div>
+
+                    {/* ================================================================ */}
 
                 </div>
             </div>

@@ -47,7 +47,7 @@ export default function LoginAluno() {
         }
 
         if (!senha.trim()) {
-            setError({ message: "Preencha a senha!!", focus: "senha" });
+            setError({ message: "Preencha a senha!", focus: "senha" });
             return;
         }
 

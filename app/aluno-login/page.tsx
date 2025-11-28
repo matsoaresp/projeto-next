@@ -92,21 +92,7 @@ export default function LoginAluno() {
                             </div>
                         )}
 
-                        <div>
-                            <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
-                                Nome
-                            </label>
-                            <input
-                                ref={nomeRef}
-                                type="text"
-                                id="nome"
-                                value={nome}
-                                onChange={(e) => setNome(e.target.value.replace(/[0-9]/g, ""))}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
-                                placeholder="Seu nome"
-                            />
-                        </div>
-
+                
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                                 Email
@@ -122,21 +108,7 @@ export default function LoginAluno() {
                             />
                         </div>
 
-                        <div>
-                            <label htmlFor="matricula" className="block text-sm font-medium text-gray-700 mb-2">
-                                Matrícula
-                            </label>
-                            <input
-                                ref={matriculaRef}
-                                type="number"
-                                id="matricula"
-                                value={matricula}
-                                onChange={(e) => setMatricula(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
-                                placeholder="Número da matrícula"
-                            />
-                        </div>
-
+                       
                         <div>
                             <label htmlFor="senha" className="block text-sm font-medium text-gray-700 mb-2">
                                 Senha

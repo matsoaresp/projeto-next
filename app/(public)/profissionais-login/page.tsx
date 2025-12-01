@@ -10,7 +10,7 @@ export default function LoginAluno() {
 
   const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'error' as 'success' | 'error' });
 
-  // Refs
+  
   const emailRef = useRef<HTMLInputElement>(null);
   const senhaRef = useRef<HTMLInputElement>(null);
 
@@ -47,7 +47,7 @@ export default function LoginAluno() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#3C467B] to-[#636CCB] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#154D71] to-[#1C6EA4] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
@@ -94,28 +94,28 @@ export default function LoginAluno() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#6E8CFB] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#6E8CFB] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full bg-[#33A1E0] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#33A1E0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 
           <div className="mt-6 text-center space-y-4">
-            <Link href="/recuperar-senha" className="text-[#50589C] hover:text-[#3C467B] text-sm">
+            <Link href="/recuperar-senha" className="text-[#154D71] hover:text-[#1C6EA4] text-sm">
               Esqueceu sua senha?
             </Link>
 
             <div className="border-t pt-4">
               <p className="text-gray-600 text-sm mb-3">Ainda não tem uma conta?</p>
-              <Link href="/aluno-cadastro" className="block w-full border-2 border-[#6E8CFB] text-[#6E8CFB] py-2 px-4 rounded-lg font-semibold hover:bg-[#6E8CFB] hover:text-white transition-colors">
+              <Link href="/aluno-cadastro" className="block w-full border-2 border-[#33A1E0] text-[#33A1E0] py-2 px-4 rounded-lg font-semibold hover:bg-[#33A1E0] hover:text-white transition-colors">
                 Criar Conta
               </Link>
             </div>
 
             <div className="border-t pt-4">
-              <p className="text-gray-600 text-sm mb-2">É Professor?</p>
-              <Link href="/profissionais-login" className="text-[#3C467B] hover:text-[#50589C] text-sm">
-                Acessar Portal do Professor
+              <p className="text-gray-600 text-sm mb-2">É Aluno?</p>
+              <Link href="/aluno-login" className="text-[#154D71] hover:text-[#1C6EA4] text-sm">
+                Acessar Portal do Aluno
               </Link>
             </div>
           </div>

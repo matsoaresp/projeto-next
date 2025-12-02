@@ -2,15 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { createPersonService } from '../aluno-login/services/alunoLoginService';
 
 // Exemplo simples de Snackbar
 function Snackbar({ open, message, type, onClose }: any) {
   if (!open) return null;
   return (
     <div
-      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${
-        type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-      }`}
+      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+        }`}
       onClick={onClose}
     >
       {message}
@@ -38,7 +38,7 @@ export default function CadastroAluno() {
   const senhaRef = useRef<HTMLInputElement>(null);
   const confirmarSenhaRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!nome) {
@@ -87,11 +87,23 @@ export default function CadastroAluno() {
     }
 
     setIsLoading(true);
-    // Aqui você chamaria sua API para cadastro
-    setTimeout(() => setIsLoading(false), 1000);
-    setSnackbar({ open: true, message: 'Cadastro realizado com sucesso!', type: 'success' });
-  };
+    const data = { name: nome, email, matricula, tipo: 'aluno' as const };
 
+    const response = await createPersonService(data);
+
+    if (!response.ok) {
+      setSnackbar({ open: true, message: response.data.message || 'Erro ao criar usuário', type: 'error' });
+    } else {
+      setSnackbar({ open: true, message: response.data.message || 'Cadastro realizado com sucesso!', type: 'success' });
+      // opcional: limpar formulário
+      setNome('');
+      setEmail('');
+      setMatricula('');
+      setSenha('');
+    }
+
+    setIsLoading(false);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#3C467B] to-[#636CCB] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -113,7 +125,7 @@ export default function CadastroAluno() {
               </label>
               <input
                 ref={nomeRef}
-                type="text"
+                type="nome"
                 id="nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value.replace(/[0-9]/g, ''))}
@@ -143,7 +155,7 @@ export default function CadastroAluno() {
               </label>
               <input
                 ref={matriculaRef}
-                type="number"
+                type="matricula"
                 id="matricula"
                 value={matricula}
                 onChange={(e) => setMatricula(e.target.value)}

@@ -114,7 +114,7 @@ export default function LoginAluno() {
 
             <div className="border-t pt-4">
               <p className="text-gray-600 text-sm mb-2">É Professor?</p>
-              <Link href="/profissionais-login" className="text-[#3C467B] hover:text-[#50589C] text-sm">
+              <Link href="/professor-login" className="text-[#3C467B] hover:text-[#50589C] text-sm">
                 Acessar Portal do Professor
               </Link>
             </div>

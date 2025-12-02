@@ -2,12 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginAluno() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
   const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'error' as 'success' | 'error' });
 
   // Refs
@@ -44,6 +45,12 @@ export default function LoginAluno() {
 
     setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
     setIsLoading(true);
+
+    setTimeout(() => {
+                console.log("Redirecionando para login...");
+                router.push('livros-pagina');
+            }, 1500);
+
   };
 
   return (

@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect } from "react";
+import {useRouter} from "next/navigation"; 
 import Link from "next/link";
 
 export default function LoginAluno() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'error' as 'success' | 'error' });
 
   
@@ -44,6 +45,11 @@ export default function LoginAluno() {
 
     setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
     setIsLoading(true);
+
+    setTimeout(() => {
+                console.log("Redirecionando para login...");
+                router.push('/livros-pagina');
+            }, 1500);
   };
 
   return (

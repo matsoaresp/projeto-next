@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { createPersonService } from '../aluno-login/services/alunoLoginService';
+import { createAlunoService } from './services/alunoRegisterService';
 
 // Exemplo simples de Snackbar
 function Snackbar({ open, message, type, onClose }: any) {
@@ -89,13 +89,13 @@ export default function CadastroAluno() {
     setIsLoading(true);
     const data = { name: nome, email, matricula, tipo: 'aluno' as const };
 
-    const response = await createPersonService(data);
+    const response = await createAlunoService(data);
 
     if (!response.ok) {
-      setSnackbar({ open: true, message: response.data.message || 'Erro ao criar usuário', type: 'error' });
+      setSnackbar({ open: true, message: response.data.message || 'Erro ao criar aluno', type: 'error' });
     } else {
       setSnackbar({ open: true, message: response.data.message || 'Cadastro realizado com sucesso!', type: 'success' });
-      // opcional: limpar formulário
+      
       setNome('');
       setEmail('');
       setMatricula('');

@@ -1,19 +1,7 @@
-export interface CreatePersonData {
-  name: string;
-  email: string;
-  matricula: string;
-  tipo: 'aluno' | 'professor';
-}
+import { CreatePersonData } from "@/app/dtos/PersonDtos";
+import { CreatePersonResponse } from "@/app/dtos/PersonDtos";
 
-export interface CreatePersonResponse {
-  ok: boolean;
-  data: {
-    message?: string;
-    [key: string]: any;
-  };
-}
-
-export async function createPersonService(data: CreatePersonData): Promise<CreatePersonResponse> {
+export async function createProfessorService(data: CreatePersonData): Promise<CreatePersonResponse> {
 
   console.log('ENVIANDO PARA API:', data);
   try {

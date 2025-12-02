@@ -107,7 +107,7 @@ export default function LoginAluno() {
 
             <div className="border-t pt-4">
               <p className="text-gray-600 text-sm mb-3">Ainda não tem uma conta?</p>
-              <Link href="/profissionais-cadastro" className="block w-full border-2 border-[#1C6EA4] text-[#1C6EA4] py-2 px-4 rounded-lg font-semibold hover:bg-[#1C6EA4] hover:text-white transition-colors">
+              <Link href="/professor-cadastro" className="block w-full border-2 border-[#1C6EA4] text-[#1C6EA4] py-2 px-4 rounded-lg font-semibold hover:bg-[#1C6EA4] hover:text-white transition-colors">
                 Criar Conta
               </Link>
             </div>

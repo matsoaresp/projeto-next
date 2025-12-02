@@ -1,16 +1,19 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+
+import { useRouter } from "next/navigation"; 
 import Link from 'next/link';
 import { createAlunoService } from './services/alunoRegisterService';
 
-// Exemplo simples de Snackbar
+
 function Snackbar({ open, message, type, onClose }: any) {
   if (!open) return null;
   return (
     <div
-      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-        }`}
+      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md z-50 transition-all duration-300 ${
+        type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+      }`}
       onClick={onClose}
     >
       {message}
@@ -19,11 +22,16 @@ function Snackbar({ open, message, type, onClose }: any) {
 }
 
 export default function CadastroAluno() {
+  const router = useRouter();
+  
+  // States do formulário
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [matricula, setMatricula] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  
+  // State de controle
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -31,7 +39,7 @@ export default function CadastroAluno() {
     type: 'success' | 'error';
   }>({ open: false, message: '', type: 'success' });
 
-  // Refs
+  // Refs para foco
   const nomeRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const matriculaRef = useRef<HTMLInputElement>(null);
@@ -40,6 +48,7 @@ export default function CadastroAluno() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
 
     if (!nome) {
       nomeRef.current?.focus();
@@ -67,6 +76,7 @@ export default function CadastroAluno() {
       return;
     }
 
+
     const emailValido = /\S+@\S+\.\S+/.test(email);
     if (!emailValido) {
       emailRef.current?.focus();
@@ -87,23 +97,54 @@ export default function CadastroAluno() {
     }
 
     setIsLoading(true);
-    const data = { name: nome, email, matricula, tipo: 'aluno' as const };
 
-    const response = await createAlunoService(data);
+    try {
+        const data = { name: nome, email, matricula, tipo: 'aluno' as const };
+        
+        const response = await createAlunoService(data);
 
-    if (!response.ok) {
-      setSnackbar({ open: true, message: response.data.message || 'Erro ao criar aluno', type: 'error' });
-    } else {
-      setSnackbar({ open: true, message: response.data.message || 'Cadastro realizado com sucesso!', type: 'success' });
-      
-      setNome('');
-      setEmail('');
-      setMatricula('');
-      setSenha('');
+        if (!response.ok) {
+           
+            setSnackbar({ 
+                open: true, 
+                message: response.data.message || 'Erro ao criar aluno', 
+                type: 'error' 
+            });
+        } else {
+            // Sucesso (200, 201)
+            setSnackbar({ 
+                open: true, 
+                message: response.data.message || 'Cadastro realizado com sucesso!', 
+                type: 'success' 
+            });
+            
+            // Limpa o formulário
+            setNome('');
+            setEmail('');
+            setMatricula('');
+            setSenha('');
+            setConfirmarSenha('');
+            
+            
+            setTimeout(() => {
+                console.log("Redirecionando para login...");
+                router.push('/aluno-login');
+            }, 1500);
+        }
+    } catch (error) {
+        
+        console.error("Erro CRÍTICO na requisição:", error);
+        setSnackbar({ 
+            open: true, 
+            message: 'Erro de conexão com o servidor. Tente novamente.', 
+            type: 'error' 
+        });
+    } finally {
+       
+        setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#3C467B] to-[#636CCB] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -125,7 +166,7 @@ export default function CadastroAluno() {
               </label>
               <input
                 ref={nomeRef}
-                type="nome"
+                type="text"
                 id="nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value.replace(/[0-9]/g, ''))}
@@ -155,7 +196,7 @@ export default function CadastroAluno() {
               </label>
               <input
                 ref={matriculaRef}
-                type="matricula"
+                type="text"
                 id="matricula"
                 value={matricula}
                 onChange={(e) => setMatricula(e.target.value)}
@@ -174,6 +215,7 @@ export default function CadastroAluno() {
                 id="senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
+                autoComplete="new-password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
                 placeholder="Sua senha"
               />
@@ -189,6 +231,7 @@ export default function CadastroAluno() {
                 id="confirmarSenha"
                 value={confirmarSenha}
                 onChange={(e) => setConfirmarSenha(e.target.value)}
+                autoComplete="new-password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
                 placeholder="Confirme sua senha"
               />
@@ -197,7 +240,7 @@ export default function CadastroAluno() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#6E8CFB] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#6E8CFB] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full bg-[#6E8CFB] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#5a75e6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? 'Cadastrando...' : 'Cadastrar'}
             </button>
@@ -208,9 +251,9 @@ export default function CadastroAluno() {
               Esqueceu sua senha?
             </Link>
 
-            <div className="border-t ">
+            <div className="border-t pt-4">
               <p className="text-gray-600 text-sm mb-2">É Professor?</p>
-              <Link href="/profissionais-cadastro" className="text-[#3C467B] hover:text-[#50589C] text-sm">
+              <Link href="/professor-cadastro" className="text-[#3C467B] hover:text-[#50589C] text-sm font-medium">
                 Acessar Portal do Professor
               </Link>
             </div>

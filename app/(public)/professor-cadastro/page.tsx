@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+
+import { useRouter } from "next/navigation"; 
 import Link from 'next/link';
 import { createProfessorService } from './service/professorRegisterService';
 
-// Exemplo simples de Snackbar
+
 function Snackbar({ open, message, type, onClose }: any) {
   if (!open) return null;
   return (
     <div
-      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${
+      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md z-50 transition-all duration-300 ${
         type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
       }`}
       onClick={onClose}
@@ -19,12 +21,17 @@ function Snackbar({ open, message, type, onClose }: any) {
   );
 }
 
-export default function CadastroProfesssor() {
+export default function CadastroAluno() {
+  const router = useRouter();
+  
+  // States do formulário
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [matricula, setMatricula] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  
+  // State de controle
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -32,7 +39,7 @@ export default function CadastroProfesssor() {
     type: 'success' | 'error';
   }>({ open: false, message: '', type: 'success' });
 
-  // Refs
+  // Refs para foco
   const nomeRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const matriculaRef = useRef<HTMLInputElement>(null);
@@ -41,6 +48,7 @@ export default function CadastroProfesssor() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
 
     if (!nome) {
       nomeRef.current?.focus();
@@ -68,6 +76,7 @@ export default function CadastroProfesssor() {
       return;
     }
 
+
     const emailValido = /\S+@\S+\.\S+/.test(email);
     if (!emailValido) {
       emailRef.current?.focus();
@@ -88,24 +97,53 @@ export default function CadastroProfesssor() {
     }
 
     setIsLoading(true);
-    
-    const data = { name: nome, email, matricula, tipo: 'professor' as const };
-    
-        const response = await createProfessorService(data);
-    
-        if (!response.ok) {
-          setSnackbar({ open: true, message: response.data.message || 'Erro ao criar professor', type: 'error' });
-        } else {
-          setSnackbar({ open: true, message: response.data.message || 'Cadastro realizado com sucesso!', type: 'success' });
+
+    try {
+        const data = { name: nome, email, matricula, tipo: 'professor' as const };
         
-          setNome('');
-          setEmail('');
-          setMatricula('');
-          setSenha('');
+        const response = await createProfessorService(data);
+
+        if (!response.ok) {
+           
+            setSnackbar({ 
+                open: true, 
+                message: response.data.message || 'Erro ao criar professor', 
+                type: 'error' 
+            });
+        } else {
+            // Sucesso (200, 201)
+            setSnackbar({ 
+                open: true, 
+                message: response.data.message || 'Cadastro realizado com sucesso!', 
+                type: 'success' 
+            });
+            
+            // Limpa o formulário
+            setNome('');
+            setEmail('');
+            setMatricula('');
+            setSenha('');
+            setConfirmarSenha('');
+            
+            
+            setTimeout(() => {
+                console.log("Redirecionando para login...");
+                router.push('/professor-login');
+            }, 1500);
         }
-    
+    } catch (error) {
+        
+        console.error("Erro CRÍTICO na requisição:", error);
+        setSnackbar({ 
+            open: true, 
+            message: 'Erro de conexão com o servidor. Tente novamente.', 
+            type: 'error' 
+        });
+    } finally {
+       
         setIsLoading(false);
-      };
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#154D71] to-[#1C6EA4] flex items-center justify-center p-4">
@@ -158,7 +196,7 @@ export default function CadastroProfesssor() {
               </label>
               <input
                 ref={matriculaRef}
-                type="number"
+                type="text"
                 id="matricula"
                 value={matricula}
                 onChange={(e) => setMatricula(e.target.value)}
@@ -177,6 +215,7 @@ export default function CadastroProfesssor() {
                 id="senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
+                autoComplete="new-password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
                 placeholder="Sua senha"
               />
@@ -192,6 +231,7 @@ export default function CadastroProfesssor() {
                 id="confirmarSenha"
                 value={confirmarSenha}
                 onChange={(e) => setConfirmarSenha(e.target.value)}
+                autoComplete="new-password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#349c9a] focus:border-transparent"
                 placeholder="Confirme sua senha"
               />
@@ -200,20 +240,20 @@ export default function CadastroProfesssor() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#1C6EA4] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#33A1E0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full bg-[#1C6EA4] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#1C6EA4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? 'Cadastrando...' : 'Cadastrar'}
             </button>
           </form>
 
           <div className="mt-3 text-center space-y-4">
-            <Link href="/recuperar-senha" className="text-[#154D71] hover:text-[#1C6EA4] text-sm">
+            <Link href="/recuperar-senha" className="text-[#1C6EA4] hover:text-[#1C6EA4] text-sm">
               Esqueceu sua senha?
             </Link>
 
-            <div className="border-t ">
+            <div className="border-t pt-4">
               <p className="text-gray-600 text-sm mb-2">É Aluno?</p>
-              <Link href="/aluno-cadastro" className="text-[#154D71] hover:text-[#1C6EA4] text-sm">
+              <Link href="/aluno-cadastro" className="text-[#154D71] hover:text-[#1C6EA4] text-sm font-medium">
                 Acessar Portal do Aluno
               </Link>
             </div>

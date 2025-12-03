@@ -112,8 +112,7 @@ export default function BookPage() {
   return (
     <div className=" rounded-md">
       
-      {/* Aqui chamamos o componente duas vezes, passando dados diferentes */}
-      <CarouselRow tituloCategoria="Destaques da Biblioteca" listaLivros={famosos} />
+      <CarouselRow  tituloCategoria="Destaques da Biblioteca" listaLivros={famosos} />
       
       <CarouselRow tituloCategoria="Novas Aquisições" listaLivros={novos} />
 

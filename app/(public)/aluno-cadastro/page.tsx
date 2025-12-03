@@ -99,7 +99,7 @@ export default function CadastroAluno() {
     setIsLoading(true);
 
     try {
-        const data = { name: nome, email, matricula, tipo: 'aluno' as const };
+        const data = { name: nome, email, matricula,password:senha, tipo: 'aluno' as const };
         
         const response = await createAlunoService(data);
 

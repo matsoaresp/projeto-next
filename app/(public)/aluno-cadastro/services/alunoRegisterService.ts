@@ -1,8 +1,7 @@
-import { CreatePersonData } from "@/app/dtos/PersonDtos";
-import { CreatePersonResponse } from "@/app/dtos/PersonDtos";
+// services/alunoRegisterService.ts
+import { CreatePersonData, CreatePersonResponse } from "@/app/dtos/PersonDtos";
 
 export async function createAlunoService(data: CreatePersonData): Promise<CreatePersonResponse> {
-
   console.log('ENVIANDO PARA API:', data);
   try {
     const response = await fetch('http://localhost:3000/persons/create', {

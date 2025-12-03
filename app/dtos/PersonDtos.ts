@@ -2,6 +2,7 @@ export interface CreatePersonData {
   name: string;
   email: string;
   matricula: string;
+  password: string;
   tipo: 'aluno' | 'professor';
 }
 

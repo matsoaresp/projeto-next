@@ -48,7 +48,7 @@ export default function LoginAluno() {
 
     setTimeout(() => {
                 console.log("Redirecionando para login...");
-                router.push('livros-pagina');
+                router.push('pagina-livros');
             }, 1500);
 
   };

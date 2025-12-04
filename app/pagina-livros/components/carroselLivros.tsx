@@ -47,7 +47,7 @@ function CarouselRow({ tituloCategoria, listaLivros }: CarouselRowProps) {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 mb-8">
+    <div className="w-full max-w-6xl mx-auto p-4 mb-8 ">
       {/* Título da Seção */}
       <h2 className="text-3xl font-bold  mb-4 pl-2 ">
         {tituloCategoria}

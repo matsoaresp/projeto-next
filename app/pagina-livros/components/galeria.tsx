@@ -1,6 +1,6 @@
 export const Galery = () => {
   return (
-    <div className="flex justify-center gap-4 mt-6">
+    <div  className="flex justify-center gap-4 mt-6 mb-20">
 
       
       <img className="h-120 w-80" src="/fundo/ursula.jpg" alt="#" />

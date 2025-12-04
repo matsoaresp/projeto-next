@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { loginService } from "./services/alunoLoginService";
 
 export default function LoginAluno() {
   const [email, setEmail] = useState('');
@@ -11,13 +12,13 @@ export default function LoginAluno() {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'error' as 'success' | 'error' });
 
-  // Refs
   const emailRef = useRef<HTMLInputElement>(null);
   const senhaRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validações locais
     if (!email.trim()) {
       setSnackbar({ open: true, message: "Preencha o email!", type: 'error' });
       emailRef.current?.focus();
@@ -43,14 +44,26 @@ export default function LoginAluno() {
       return;
     }
 
-    setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
     setIsLoading(true);
 
-    setTimeout(() => {
-                console.log("Redirecionando para login...");
-                router.push('pagina-livros');
-            }, 1500);
+    // Chamada ao backend
+    const response = await loginService(email, senha);
 
+    if (!response.ok || !response.data?.access_token) {
+      setSnackbar({ open: true, message: response.data?.message || "Email ou senha incorretos", type: "error" });
+      setIsLoading(false);
+      return;
+    }
+
+    // Salva token e dados do usuário
+    localStorage.setItem("token", response.data.access_token);
+    localStorage.setItem("user", JSON.stringify(response.data.user || {}));
+
+    setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
+
+    setTimeout(() => {
+      router.push('pagina-livros');
+    }, 1500);
   };
 
   return (
@@ -129,7 +142,6 @@ export default function LoginAluno() {
         </div>
       </div>
 
-      
       {snackbar.open && (
         <div
           className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${

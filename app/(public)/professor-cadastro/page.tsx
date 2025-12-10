@@ -2,18 +2,16 @@
 
 import { useState, useRef } from 'react';
 
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import { createProfessorService } from './service/professorRegisterService';
 
 
 function Snackbar({ open, message, type, onClose }: any) {
   if (!open) return null;
   return (
     <div
-      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md z-50 transition-all duration-300 ${
-        type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-      }`}
+      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md z-50 transition-all duration-300 ${type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+        }`}
       onClick={onClose}
     >
       {message}
@@ -23,14 +21,14 @@ function Snackbar({ open, message, type, onClose }: any) {
 
 export default function CadastroAluno() {
   const router = useRouter();
-  
+
   // States do formulário
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [matricula, setMatricula] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-  
+
   // State de controle
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -99,50 +97,50 @@ export default function CadastroAluno() {
     setIsLoading(true);
 
     try {
-        const data = { name: nome, email, matricula, password:senha, tipo: 'professor' as const };
-        
-        const response = await createProfessorService(data);
 
-        if (!response.ok) {
-           
-            setSnackbar({ 
-                open: true, 
-                message: response.data.message || 'Erro ao criar professor', 
-                type: 'error' 
-            });
-        } else {
-            // Sucesso (200, 201)
-            setSnackbar({ 
-                open: true, 
-                message: response.data.message || 'Cadastro realizado com sucesso!', 
-                type: 'success' 
-            });
-            
-            // Limpa o formulário
-            setNome('');
-            setEmail('');
-            setMatricula('');
-            setSenha('');
-            setConfirmarSenha('');
-            
-            
-            setTimeout(() => {
-                console.log("Redirecionando para login...");
-                router.push('/professor-login');
-            }, 1500);
-        }
+      const response = await fetch('http://localhost:3001/api/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: nome,
+          email: email,
+          matricula: matricula,
+          password: senha,
+          tipo: 'professor'
+        })
+      })
+
+      const data = await response.json();
+
+      setSnackbar({
+        open: true,
+        message: data.message || 'Cadastro realizado com sucesso!',
+        type: 'success'
+      });
+
+
+      // Limpa o formulário
+      setNome('');
+      setEmail('');
+      setMatricula('');
+      setSenha('');
+      setConfirmarSenha('');
+
+
+      setTimeout(() => {
+        console.log("Redirecionando para login...");
+        router.push('/professor-login');
+      }, 1500);
+
     } catch (error) {
-        
-        console.error("Erro CRÍTICO na requisição:", error);
-        setSnackbar({ 
-            open: true, 
-            message: 'Erro de conexão com o servidor. Tente novamente.', 
-            type: 'error' 
-        });
-    } finally {
-       
-        setIsLoading(false);
-    }
+
+      console.error("Erro CRÍTICO na requisição:", error);
+      setSnackbar({
+        open: true,
+        message: 'Erro de conexão com o servidor. Tente novamente.',
+        type: 'error'
+      });
+    } 
   };
 
   return (

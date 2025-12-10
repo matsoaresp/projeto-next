@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loginService } from "./services/alunoLoginService";
 
 export default function LoginAluno() {
   const [email, setEmail] = useState('');
@@ -47,23 +46,35 @@ export default function LoginAluno() {
     setIsLoading(true);
 
     // Chamada ao backend
-    const response = await loginService(email, senha);
+    try {
+      const response = await fetch('http://localhost:3001/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: senha })
+      })
 
-    if (!response.ok || !response.data?.access_token) {
-      setSnackbar({ open: true, message: response.data?.message || "Email ou senha incorretos", type: "error" });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({ message: "Erro desconhecido" }));
+        throw new Error(data.message || "Erro ao fazer login");
+}
+
+      setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
+
+      setTimeout(() => {
+        router.push('pagina-livros');
+      }, 1500);
+    } catch (error: any) {
+      console.error("Erro CRÍTICO na requisição:", error);
+      setSnackbar({
+        open: true,
+        message: 'Usuario não encontrado.',
+        type: 'error',
+
+      });
+      
+    } finally{
       setIsLoading(false);
-      return;
     }
-
-    // Salva token e dados do usuário
-    localStorage.setItem("token", response.data.access_token);
-    localStorage.setItem("user", JSON.stringify(response.data.user || {}));
-
-    setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
-
-    setTimeout(() => {
-      router.push('pagina-livros');
-    }, 1500);
   };
 
   return (
@@ -144,9 +155,8 @@ export default function LoginAluno() {
 
       {snackbar.open && (
         <div
-          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${
-            snackbar.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-          }`}
+          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${snackbar.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+            }`}
           onClick={() => setSnackbar({ ...snackbar, open: false })}
         >
           {snackbar.message}

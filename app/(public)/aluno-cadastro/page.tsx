@@ -139,10 +139,7 @@ export default function CadastroAluno() {
             message: 'Erro de conexão com o servidor. Tente novamente.', 
             type: 'error' 
         });
-    } finally {
-       
-        setIsLoading(false);
-    }
+    } 
   };
 
   return (

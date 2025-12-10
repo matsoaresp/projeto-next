@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from "react";
-import {useRouter} from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginAluno() {
@@ -11,11 +11,11 @@ export default function LoginAluno() {
   const router = useRouter();
   const [snackbar, setSnackbar] = useState({ open: false, message: '', type: 'error' as 'success' | 'error' });
 
-  
+
   const emailRef = useRef<HTMLInputElement>(null);
   const senhaRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -46,10 +46,35 @@ export default function LoginAluno() {
     setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
     setIsLoading(true);
 
-    setTimeout(() => {
-                console.log("Redirecionando para login...");
-                router.push('/pagina-livros');
-            }, 1500);
+
+    try {
+      const response = await fetch('http://localhost:3001/api/auth', {
+        method: 'POST',
+        headers: { 'Contenct-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: senha })
+      })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({ message: "Erro desconhecido " }));
+        throw new Error(data.message || "Erro ao fazer login");
+      }
+      setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
+      setTimeout(() => {
+        router.push('pagina-livros');
+      }, 1500);
+
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: 'Usuario não encontrado.',
+        type: 'error',
+
+      });
+    } finally {
+      setIsLoading(false);
+    }
+
+
   };
 
   return (
@@ -128,12 +153,11 @@ export default function LoginAluno() {
         </div>
       </div>
 
-      
+
       {snackbar.open && (
         <div
-          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${
-            snackbar.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-          }`}
+          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md ${snackbar.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+            }`}
           onClick={() => setSnackbar({ ...snackbar, open: false })}
         >
           {snackbar.message}

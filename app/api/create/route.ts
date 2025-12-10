@@ -7,7 +7,11 @@ export async function POST(req: NextRequest) {
 
     const payload = {
       ...body,
-      tipo: "professor",
+      name: body.name,
+      email: body.email,
+      matricula: body.matricula,
+      password: body.password,
+      tipo: body.tipo,
     };
 
     const backendUrl = `${API_CONFIG.BASE_URL}/persons/create`;

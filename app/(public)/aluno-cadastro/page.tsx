@@ -1,10 +1,7 @@
 'use client';
-
 import { useState, useRef } from 'react';
-
 import { useRouter } from "next/navigation"; 
 import Link from 'next/link';
-import { createAlunoService } from './services/alunoRegisterService';
 
 
 function Snackbar({ open, message, type, onClose }: any) {
@@ -99,22 +96,25 @@ export default function CadastroAluno() {
     setIsLoading(true);
 
     try {
-        const data = { name: nome, email, matricula,password:senha, tipo: 'aluno' as const };
-        
-        const response = await createAlunoService(data);
+        const response = await fetch('http://localhost:3001/api/create',{
 
-        if (!response.ok) {
-           
-            setSnackbar({ 
-                open: true, 
-                message: response.data.message || 'Erro ao criar aluno', 
-                type: 'error' 
-            });
-        } else {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            name: nome, 
+            email: email, 
+            matricula: matricula,
+            password: senha,
+            tipo: "aluno"
+          }),
+        });
+
+        const data = await response.json();
+
             // Sucesso (200, 201)
             setSnackbar({ 
                 open: true, 
-                message: response.data.message || 'Cadastro realizado com sucesso!', 
+                message: data.message || 'Cadastro realizado com sucesso!', 
                 type: 'success' 
             });
             
@@ -130,7 +130,7 @@ export default function CadastroAluno() {
                 console.log("Redirecionando para login...");
                 router.push('/aluno-login');
             }, 1500);
-        }
+        
     } catch (error) {
         
         console.error("Erro CRÍTICO na requisição:", error);

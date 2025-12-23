@@ -1,9 +1,26 @@
+'use client'
 import BookCarousel from '@/app/pagina-livros/components/carroselLivros';
 import { HeaderLivros } from './components/headerLivros';
 import { Galery } from './components/galeria';
+import { useAuth } from '../shared/auth/AuthProvider';
+import { useEffect } from 'react';
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
+
+  const {user, isLoading} = useAuth();
+  const router = useRouter();
+
+  useEffect ( () => {
+
+    if (!isLoading && !user){
+      router.push('/aluno-login')
+    }
+
+  }, [user, isLoading, router])
+
+  if (isLoading){
+     return (
     
     <div className="min-h-screen bg-gradient-to-br from-[#DEDED1] to-[#F2E2B1]">
       
@@ -16,4 +33,6 @@ export default function Home() {
       
     </div>
   );
+    
+  }
 }

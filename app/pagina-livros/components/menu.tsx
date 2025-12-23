@@ -1,10 +1,10 @@
 'use client';
-
-import { useState } from "react";
+import { LoginContext } from "@/app/contexts/userContext";
+import { useState, useContext } from "react";
 
 export const DropdownInformation = () => {
   const [open, setOpen] = useState(false);
-
+  const {nome,email} = useContext(LoginContext)
   return (
     <div className="relative inline-block text-left">
       {/* Botão */}
@@ -45,8 +45,8 @@ export const DropdownInformation = () => {
                 onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/150")}
               />
               <div className="overflow-hidden">
-                <div className="font-semibold text-gray-900 text-sm">Nome do Usuário</div>
-                <div className="truncate text-xs text-gray-500">email@gmail.com</div>
+                <div className="font-semibold text-gray-900 text-sm">{nome}</div>
+                <div className="truncate text-xs text-gray-500">{email}</div>
               </div>
             </div>
           </div>

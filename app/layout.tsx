@@ -2,6 +2,7 @@ import "./globals.css";
 import { AuthProvider } from "./shared/auth/AuthProvider";
 import localFont from "next/font/local";
 import { Lexend_Deca } from "next/font/google";
+import { LoginProvider } from "./contexts/userContext";
 
 
 const tommy = localFont({
@@ -30,7 +31,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-br" className={minhaFonte.variable}>
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <LoginProvider>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+        </LoginProvider>
       </body>
     </html>
   );

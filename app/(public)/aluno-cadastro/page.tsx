@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Link from 'next/link';
 
 
@@ -8,9 +8,8 @@ function Snackbar({ open, message, type, onClose }: any) {
   if (!open) return null;
   return (
     <div
-      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md z-50 transition-all duration-300 ${
-        type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-      }`}
+      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-md z-50 transition-all duration-300 ${type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+        }`}
       onClick={onClose}
     >
       {message}
@@ -27,7 +26,7 @@ export default function CadastroAluno() {
   const [matricula, setMatricula] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-  
+
   // State de controle
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{
@@ -43,47 +42,24 @@ export default function CadastroAluno() {
   const senhaRef = useRef<HTMLInputElement>(null);
   const confirmarSenhaRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
 
-    if (!nome) {
-      nomeRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha o nome!', type: 'error' });
-      return;
-    }
-    if (!email) {
-      emailRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha o email!', type: 'error' });
-      return;
-    }
-    if (!matricula) {
-      matriculaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha a matrícula!', type: 'error' });
-      return;
-    }
-    if (!senha) {
-      senhaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Preencha a senha!', type: 'error' });
-      return;
-    }
-    if (!confirmarSenha) {
-      confirmarSenhaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Confirme sua senha!', type: 'error' });
-      return;
-    }
 
+    if (!nome || !email || !matricula || !senha){
+      setSnackbar({ open: true, message: 'Preencha todos os campos!', type: 'error' });
+    }
 
     const emailValido = /\S+@\S+\.\S+/.test(email);
     if (!emailValido) {
-      emailRef.current?.focus();
-      setSnackbar({ open: true, message: 'Email inválido!', type: 'error' });
+      setSnackbar({ open: true, message: 'Digite um e-mail válido!', type: 'error' });
       return;
     }
 
     if (senha.length < 4) {
       senhaRef.current?.focus();
-      setSnackbar({ open: true, message: 'Senha deve ter pelo menos 4 caracteres', type: 'error' });
+      setSnackbar({ open: true, message: 'A senha deve ter mais de 4 caracteres!', type: 'error' });
       return;
     }
 
@@ -96,50 +72,50 @@ export default function CadastroAluno() {
     setIsLoading(true);
 
     try {
-        const response = await fetch('http://localhost:3001/api/create',{
+      const response = await fetch('http://localhost:3001/api/create', {
 
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            name: nome, 
-            email: email, 
-            matricula: matricula,
-            password: senha,
-            tipo: "aluno"
-          }),
-        });
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: nome,
+          email: email,
+          matricula: matricula,
+          password: senha,
+          tipo: "aluno"
+        }),
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-            // Sucesso (200, 201)
-            setSnackbar({ 
-                open: true, 
-                message: data.message || 'Cadastro realizado com sucesso!', 
-                type: 'success' 
-            });
-            
-            // Limpa o formulário
-            setNome('');
-            setEmail('');
-            setMatricula('');
-            setSenha('');
-            setConfirmarSenha('');
-            
-            
-            setTimeout(() => {
-                console.log("Redirecionando para login...");
-                router.push('/aluno-login');
-            }, 1500);
-        
+      // Sucesso (200, 201)
+      setSnackbar({
+        open: true,
+        message: data.message || 'Cadastro realizado com sucesso!',
+        type: 'success'
+      });
+
+      // Limpa o formulário
+      setNome('');
+      setEmail('');
+      setMatricula('');
+      setSenha('');
+      setConfirmarSenha('');
+
+
+      setTimeout(() => {
+        console.log("Redirecionando para login...");
+        router.push('/aluno-login');
+      }, 1500);
+
     } catch (error) {
-        
-        console.error("Erro CRÍTICO na requisição:", error);
-        setSnackbar({ 
-            open: true, 
-            message: 'Erro de conexão com o servidor. Tente novamente.', 
-            type: 'error' 
-        });
-    } 
+
+      console.error("Erro CRÍTICO na requisição:", error);
+      setSnackbar({
+        open: true,
+        message: 'Erro de conexão com o servidor. Tente novamente.',
+        type: 'error'
+      });
+    }
   };
 
   return (

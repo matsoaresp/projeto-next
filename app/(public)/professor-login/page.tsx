@@ -67,6 +67,7 @@ export default function LoginAluno() {
          id: String(data.user.id),
         name: data.user.name,
         email: data.user.email,
+        matricula: data.user.matricula,
         role: data.role ?? "user",
         tipo: data.user.tipo ?? "professor"
       })

@@ -3,8 +3,11 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/shared/auth/AuthProvider";
+
 
 export default function LoginAluno() {
+  const {login} = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const router = useRouter();
@@ -18,26 +21,26 @@ export default function LoginAluno() {
     e.preventDefault();
 
     // Validações locais
-    if (!email.trim()) {
+    if(!email.trim()) {
       setSnackbar({ open: true, message: "Preencha o email!", type: 'error' });
       emailRef.current?.focus();
       return;
     }
 
-    if (!senha.trim()) {
+    if(!senha.trim()) {
       setSnackbar({ open: true, message: "Preencha a senha!", type: 'error' });
       senhaRef.current?.focus();
       return;
     }
 
     const emailValido = /\S+@\S+\.\S+/.test(email);
-    if (!emailValido) {
+    if(!emailValido) {
       setSnackbar({ open: true, message: "Email inválido, tente novamente", type: 'error' });
       emailRef.current?.focus();
       return;
     }
 
-    if (senha.length < 4) {
+    if(senha.length < 4) {
       setSnackbar({ open: true, message: "A senha deve ter pelo menos 4 caracteres", type: 'error' });
       senhaRef.current?.focus();
       return;
@@ -53,17 +56,27 @@ export default function LoginAluno() {
         body: JSON.stringify({ email: email, password: senha })
       })
 
-      if (!response.ok) {
+      if(!response.ok) {
         const data = await response.json().catch(() => ({ message: "Erro desconhecido" }));
         throw new Error(data.message || "Erro ao fazer login");
-}
+      }
+      const data = await response.json();
+
+      login({
+         id: String(data.user.id),
+        name: data.user.name,
+        email: data.user.email,
+        role: data.role ?? "user",
+        tipo: data.user.tipo ?? "aluno"
+      });
+
+      localStorage.setItem("ACCESS_TOKEN", data.access_token)
+
 
       setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
 
-      setTimeout(() => {
-        router.push('pagina-livros');
-      }, 1500);
-    } catch (error: any) {
+      router.replace('/pagina-livros');
+    } catch(error: any) {
       console.error("Erro CRÍTICO na requisição:", error);
       setSnackbar({
         open: true,
@@ -71,8 +84,8 @@ export default function LoginAluno() {
         type: 'error',
 
       });
-      
-    } finally{
+
+    } finally {
       setIsLoading(false);
     }
   };

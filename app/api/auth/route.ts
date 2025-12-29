@@ -116,7 +116,7 @@ const {email, password} = body;
         id: data.user.id,
         email: data.user.email,
         name: data.user.fullName || data.user.name || data.user.email,
-        role: 'paciente', // Mapeia 'client' para 'paciente'
+        role: 'usuario', // Mapeia 'client' para 'paciente'
         userRoleId: data.user.personRoles?.[0]?.id, // ID do role de cliente
       },
       access_token: data.access_token,

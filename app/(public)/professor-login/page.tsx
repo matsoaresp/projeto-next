@@ -3,8 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/app/shared/auth/AuthProvider";
 
 export default function LoginAluno() {
+  const {login} = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -58,9 +60,22 @@ export default function LoginAluno() {
         const data = await response.json().catch(() => ({ message: "Erro desconhecido " }));
         throw new Error(data.message || "Erro ao fazer login");
       }
+      
+      const data = await response.json();
+
+      login({
+         id: String(data.user.id),
+        name: data.user.name,
+        email: data.user.email,
+        role: data.role ?? "user",
+        tipo: data.user.tipo ?? "professor"
+      })
+
+      localStorage.setItem("ACCESS_TOKEN", data.access_token)
+      
       setSnackbar({ open: true, message: "Login realizado com sucesso!", type: 'success' });
       setTimeout(() => {
-        router.push('pagina-livros');
+        router.replace('/pagina-livros');
       }, 1500);
 
     } catch (error: any) {

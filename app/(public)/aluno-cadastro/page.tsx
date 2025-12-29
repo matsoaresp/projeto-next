@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
+import { useAuth } from '@/app/shared/auth/AuthProvider';
 
 
 function Snackbar({ open, message, type, onClose }: any) {
@@ -19,6 +20,7 @@ function Snackbar({ open, message, type, onClose }: any) {
 
 export default function CadastroAluno() {
   const router = useRouter();
+  const {user} = useAuth();
   
   // States do formulário
   const [nome, setNome] = useState('');

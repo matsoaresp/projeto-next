@@ -1,10 +1,24 @@
 'use client';
-import { LoginContext } from "@/app/contexts/userContext";
-import { useState, useContext } from "react";
+import {useAuth } from "@/app/shared/auth/AuthProvider";
+import { useState} from "react";
+import { useRouter } from "next/navigation";
+
 
 export const DropdownInformation = () => {
+  const {user,logout} = useAuth();
   const [open, setOpen] = useState(false);
-  const {nome,email} = useContext(LoginContext)
+  const router = useRouter();
+
+ if (!user) {
+  return <span>Usuário não carregado</span>;
+}
+
+
+  function handleLogout () {
+
+      logout();
+      router.push('aluno-login')
+  }
   return (
     <div className="relative inline-block text-left">
       {/* Botão */}
@@ -45,8 +59,8 @@ export const DropdownInformation = () => {
                 onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/150")}
               />
               <div className="overflow-hidden">
-                <div className="font-semibold text-gray-900 text-sm">{nome}</div>
-                <div className="truncate text-xs text-gray-500">{email}</div>
+                <div className="font-semibold text-gray-900 text-sm">{user.name}</div>
+                <div className="truncate text-xs text-gray-500">{user.email}</div>
               </div>
             </div>
           </div>
@@ -75,7 +89,8 @@ export const DropdownInformation = () => {
             
             <hr className="my-1 border-gray-200" />
 
-            <li>
+            <li
+            onClick={handleLogout}>
               <a href="#" className="flex items-center w-full p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors">
                 <svg className="w-4 h-4 me-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>

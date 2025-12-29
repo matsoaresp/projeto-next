@@ -14,12 +14,19 @@ export default function Home() {
   useEffect ( () => {
 
     if (!isLoading && !user){
-      router.push('/aluno-login')
+      router.replace('/aluno-login')
     }
 
   }, [user, isLoading, router])
 
   if (isLoading){
+    return <div>Carregando...</div>;
+  }
+
+  if (!user){
+    return null;
+  }
+
      return (
     
     <div className="min-h-screen bg-gradient-to-br from-[#DEDED1] to-[#F2E2B1]">
@@ -34,5 +41,4 @@ export default function Home() {
     </div>
   );
     
-  }
 }

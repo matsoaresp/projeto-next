@@ -1,4 +1,3 @@
-'use client'
 import PacienteSection from "./components/PacienteSection";
 
 export default function Page() {

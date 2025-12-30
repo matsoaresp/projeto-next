@@ -1,23 +1,88 @@
 'use client';
 
 import { useAuth } from "@/app/shared/auth/AuthProvider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+interface DadosPessoaisAluno {
+
+  name: string,
+  email: string,
+  matricula: string,
+
+}
 
 export default function PacienteSection() {
 
-    const {user} = useAuth();
-    const [name, setName] = useState(user?.name || "");
-    const [email, setEmail] = useState(user?.email || "");
-    const [matricula, setMatricula] = useState(user?.matricula || "");
+  const { user } = useAuth();
 
-    if (!user){
-        return 
+  if(!user) {
+    return null;
+  }
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [dados, setDados] = useState<DadosPessoaisAluno>({
+    name: '',
+    email: '',
+    matricula: '',
+  })
+
+
+   useEffect(() => {
+    if (user) {
+      setDados({
+        name: user.name,
+        email: user.email,
+        matricula: user.matricula,
+      });
+    }
+  }, [user]);
+
+  if (!user) {
+    return null;
+  }
+
+  const handleSave = async () => {
+    if(dados.name.length < 3 || !dados.name) {
+      setNotification({ message: 'O nome deve ter pelo menos 3 caracteres.', type: 'error' });
+      return;
+    }
+    if(!dados.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email)) {
+      setNotification({ message: 'Email inválido', type: 'error' });
+      return;
     }
 
+    if(dados.matricula.length < 9 || !dados.matricula) {
+      setNotification({ message: 'A matrícula deve ter pelo menos 9 caracteres.', type: 'error' });
+      return;
+
+    }
+
+    setIsSaving(true);
+
+    try{
+
+
+    }catch (error) {
+      setNotification({ message: 'Erro ao salvar os dados. Tente novamente.', type: 'error' });
+    }
+  }
+
+  const handleInputChange = (
+    field: keyof DadosPessoaisAluno,
+    value: string
+  ) => {
+    setDados(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 ">
       <div className="w-full max-w-3xl p-6 bg-white rounded-xl shadow-md">
-        
+
         {/* Header */}
         <div className="flex flex-col items-center mb-6 text-center">
           <h1 className="text-2xl font-bold text-gray-900">
@@ -27,9 +92,45 @@ export default function PacienteSection() {
             Gerencie suas informações pessoais e de faturamento
           </p>
 
-          <button className="mt-4 px-4 py-2 bg-[#349c9a] text-white rounded-lg hover:bg-[#2a8886] text-sm font-medium">
-            Editar
-          </button>
+          <div className="flex space-x-3">
+            {isEditing ? (
+              <>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-[#636CCB] text-white rounded-lg hover:bg-[#3C467B] disabled:opacity-50 flex items-center text-sm font-medium mt-3"
+                >
+                  {isSaving ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Salvando...
+                    </>
+                  ) : (
+                    'Salvar'
+                  )}
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-[#636CCB] text-white rounded-lg hover:bg-[#3C467B] flex items-center text-sm font-medium mt-3"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Editar
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Avatar */}
@@ -55,8 +156,9 @@ export default function PacienteSection() {
             </label>
             <input
               type="text"
-              value={user.name}
-              onChange={(e) => setName(e.target.value)}
+              value={dados.name}
+              disabled={!isEditing}
+              onChange={(e) => handleInputChange('name', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center"
             />
           </div>
@@ -67,8 +169,9 @@ export default function PacienteSection() {
             </label>
             <input
               type="email"
-              value={user.email}
-              onChange={(e) => setName(e.target.value)}
+              value={dados.email}
+              disabled={!isEditing}
+              onChange={(e) => handleInputChange('email', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center"
             />
           </div>
@@ -79,8 +182,9 @@ export default function PacienteSection() {
             </label>
             <input
               type="text"
-              value={user.matricula}
-              onChange={(e) => setMatricula(e.target.value)}
+              value={dados.matricula}
+              disabled={!isEditing}
+              onChange={(e) => handleInputChange('matricula', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center"
             />
           </div>

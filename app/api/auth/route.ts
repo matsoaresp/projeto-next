@@ -69,6 +69,7 @@ const {email, password} = body;
       hasUser: !!data.user,
       userEmail: data.user?.email,
       userName: data.user?.name,
+      matricula: data.user?.matricula,
       userId: data.user?.id,
       dataKeys: Object.keys(data),
       dataType: typeof data,
@@ -116,8 +117,9 @@ const {email, password} = body;
         id: data.user.id,
         email: data.user.email,
         name: data.user.fullName || data.user.name || data.user.email,
-        role: 'usuario', // Mapeia 'client' para 'paciente'
-        userRoleId: data.user.personRoles?.[0]?.id, // ID do role de cliente
+        matricula: data.user.matricula || '',
+        role: 'usuario', 
+        userRoleId: data.user.personRoles?.[0]?.id, 
       },
       access_token: data.access_token,
     };

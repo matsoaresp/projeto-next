@@ -70,7 +70,7 @@ export const DropdownInformation = () => {
           <ul className="px-2 pb-2 text-sm text-gray-700 font-medium">
             <li>
               <Link
-                href="/aluno-login"
+                href="/alunos"
                 className="flex items-center w-full p-2 hover:bg-gray-100 rounded-md transition-colors"
               >
                 <svg

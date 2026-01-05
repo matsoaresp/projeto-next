@@ -16,6 +16,7 @@ interface AuthContextProps {
   isLoading: boolean;
   login: (userData: User) => void;
   logout: () => void;
+  updateUser: (userData: User) => void; 
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -37,13 +38,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userData);
   };
 
+  const updateUser = (userData: User) => {
+    localStorage.setItem("APP_USER", JSON.stringify(userData));
+    setUser(userData);
+  };
+
   const logout = () => {
     localStorage.removeItem("APP_USER");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, logout, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -51,6 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  if (!ctx) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
   return ctx;
 }

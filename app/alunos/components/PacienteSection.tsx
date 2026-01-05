@@ -13,11 +13,8 @@ interface DadosPessoaisAluno {
 
 export default function PacienteSection() {
 
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
 
-  if(!user) {
-    return null;
-  }
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -28,8 +25,8 @@ export default function PacienteSection() {
   })
 
 
-   useEffect(() => {
-    if (user) {
+  useEffect(() => {
+    if(user) {
       setDados({
         name: user.name,
         email: user.email,
@@ -38,7 +35,7 @@ export default function PacienteSection() {
     }
   }, [user]);
 
-  if (!user) {
+  if(!user) {
     return null;
   }
 
@@ -55,15 +52,41 @@ export default function PacienteSection() {
     if(dados.matricula.length < 9 || !dados.matricula) {
       setNotification({ message: 'A matrícula deve ter pelo menos 9 caracteres.', type: 'error' });
       return;
-
     }
 
     setIsSaving(true);
 
-    try{
+    const token = localStorage.getItem('token')
 
+    if(!token){
+      setNotification({ message: 'Usuario não autenticado.', type: 'error' });
+    }
 
-    }catch (error) {
+    try {
+      const response = await fetch(`http://localhost:3000/persons/update/${user.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        
+        body: JSON.stringify(dados)
+      });
+
+      if(!response) {
+        throw new Error('Erro ao salvar dados')
+      }
+
+      const updatedUser = await response.json();
+      setNotification({ message: 'Dados salvos com sucesso!.', type: 'success' });
+
+      setDados({
+        name: updatedUser.name ?? '',
+        email: updatedUser.email ?? '',
+        matricula: updatedUser.matricula ?? ''
+});
+      updateUser(updatedUser);
+      setIsEditing(false)
+    } catch(error) {
       setNotification({ message: 'Erro ao salvar os dados. Tente novamente.', type: 'error' });
     }
   }
@@ -133,6 +156,18 @@ export default function PacienteSection() {
           </div>
         </div>
 
+        {notification && (
+          <div
+            className={`mb-4 px-4 py-2 rounded text-sm text-center ${notification.type === 'success'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-red-100 text-red-700'
+              }`}
+          >
+            {notification.message}
+          </div>
+        )}
+
+
         {/* Avatar */}
         <div className="mb-8 flex justify-center">
           <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300">
@@ -156,7 +191,7 @@ export default function PacienteSection() {
             </label>
             <input
               type="text"
-              value={dados.name}
+              value={dados.name || ''}
               disabled={!isEditing}
               onChange={(e) => handleInputChange('name', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center"
@@ -169,7 +204,7 @@ export default function PacienteSection() {
             </label>
             <input
               type="email"
-              value={dados.email}
+              value={dados.email || ''}
               disabled={!isEditing}
               onChange={(e) => handleInputChange('email', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center"
@@ -182,7 +217,7 @@ export default function PacienteSection() {
             </label>
             <input
               type="text"
-              value={dados.matricula}
+              value={dados.matricula || ''}
               disabled={!isEditing}
               onChange={(e) => handleInputChange('matricula', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center"

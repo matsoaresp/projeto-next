@@ -5,7 +5,7 @@ import { Galery } from './components/galeria';
 import { useAuth } from '../shared/auth/AuthProvider';
 import { useEffect } from 'react';
 import { useRouter } from "next/navigation";
-import BookPage from './components/BookPage';
+import BookPage from './[id]/page';
 import { CarouselRow } from './components/carroselLivros';
 import { livrosfamosos, livrosNovos } from '../data/Books';
 
@@ -47,7 +47,6 @@ export default function Home() {
         listaLivros={livrosNovos}/>
         </div>
        
-        <BookPage />
       </main>
       
     </div>

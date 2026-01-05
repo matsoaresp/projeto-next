@@ -1,5 +1,6 @@
 'use client';
 import { Livros } from '@/app/data/Books';
+import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
 
 interface CarouselRowProps {
@@ -8,6 +9,7 @@ interface CarouselRowProps {
 }
 
 export function CarouselRow({ tituloCategoria, listaLivros }: CarouselRowProps) {
+  const router = useRouter();
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -58,11 +60,8 @@ export function CarouselRow({ tituloCategoria, listaLivros }: CarouselRowProps) 
                     src={livro.capa}
                     alt={livro.titulo}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        // Placeholder caso a imagem não exista ainda
-                        target.src = "https://via.placeholder.com/200x300?text=Capa"; 
-                    }}
+                    onClick={() => router.push(`/pagina-livros/${livro.id}`)}
+                   
                   />
                 </div>
               </div>

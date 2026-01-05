@@ -1,5 +1,12 @@
+import { HeaderLivros } from "../pagina-livros/components/headerLivros";
 import PacienteSection from "./components/PacienteSection";
 
 export default function Page() {
-  return <PacienteSection />;
+  return(
+<div>
+  <HeaderLivros/>
+  <PacienteSection />;
+  </div>
+  )
+  
 }

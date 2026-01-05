@@ -58,9 +58,6 @@ export default function PacienteSection() {
 
     const token = localStorage.getItem('token')
 
-    if(!token){
-      setNotification({ message: 'Usuario não autenticado.', type: 'error' });
-    }
 
     try {
       const response = await fetch(`http://localhost:3000/persons/update/${user.id}`, {

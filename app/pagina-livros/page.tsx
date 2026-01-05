@@ -1,10 +1,13 @@
 'use client'
-import BookCarousel from '@/app/pagina-livros/components/carroselLivros';
+
 import { HeaderLivros } from './components/headerLivros';
 import { Galery } from './components/galeria';
 import { useAuth } from '../shared/auth/AuthProvider';
 import { useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import BookPage from './[id]/page';
+import { CarouselRow } from './components/carroselLivros';
+import { livrosfamosos, livrosNovos } from '../data/Books';
 
 export default function Home() {
 
@@ -30,12 +33,20 @@ export default function Home() {
      return (
     
     <div className="min-h-screen bg-gradient-to-br from-[#DEDED1] to-[#F2E2B1]">
-      
-      
       <HeaderLivros/> 
       <Galery/>
-      <main className="flex items-center justify-center p-4 ">
-        <BookCarousel />
+      <main className="flex flex-col items-center p-4 ">
+        <div>
+        <CarouselRow
+        tituloCategoria="Destaques da Biblioteca"
+        listaLivros={livrosfamosos}/>
+         </div>
+        <div>
+        <CarouselRow
+        tituloCategoria="Novas Aquisições"
+        listaLivros={livrosNovos}/>
+        </div>
+       
       </main>
       
     </div>
